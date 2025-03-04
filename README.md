@@ -1,71 +1,75 @@
-# file-size-viewer README
+# 📂 File Size Viewer - VS Code Extension
 
-This is the README for your extension "file-size-viewer". After writing up a brief description, we recommend including the following sections.
+[![VS Code Marketplace](https://img.shields.io/badge/VSCode-File%20Size%20Viewer-blue?style=flat&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=your-unique-id)
 
-## Features
+Display file sizes directly in the VS Code file explorer!
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## ✨ Features
 
-For example if there is an image subfolder under your extension project workspace:
+✅ Show file sizes next to each file in the explorer.
+✅ Display folder sizes when expanded.
+✅ Customizable thresholds for small, medium, and large files.
+✅ Colored icons to indicate file sizes (🔴 Red for large, 🟡 Yellow for medium, 🟢 Green for small).
+✅ A **dashboard panel** to view the largest files in your project.
 
-\!\[feature X\]\(images/feature-x.png\)
+## 📥 Installation
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### From the VS Code Marketplace
 
-## Requirements
+1. Open **VS Code**
+2. Go to **Extensions** (`Ctrl + Shift + X`)
+3. Search for `File Size Viewer`
+4. Click **Install**
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Manual Installation
 
-## Extension Settings
+1. Download the `.vsix` file from [Releases](https://github.com/yashgupta18/file-size-viewer/releases)
+2. Open **VS Code** and run:
+   ```sh
+   code --install-extension file-size-viewer.vsix
+   ```
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## 🚀 Usage
 
-For example:
+Once installed, file sizes will appear next to files in the **Explorer**.
 
-This extension contributes the following settings:
+- **Set File Size Thresholds**
+  Go to **Settings (`Ctrl + ,`)** and search for `File Size Viewer`.
+  Customize thresholds for **small**, **medium**, and **large** files.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- **Refresh File Sizes**
+  If file sizes are not updating, right-click the explorer and click:
+  `Refresh File Size Viewer`.
 
-## Known Issues
+## ⚙️ Configuration
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Modify settings via VS Code settings:
 
-## Release Notes
+| Setting                     | Description                                 | Default Value |
+| --------------------------- | ------------------------------------------- | ------------- |
+| `fileSizeViewer.smallSize`  | Files smaller than this are green 🟢        | `1MB`         |
+| `fileSizeViewer.mediumSize` | Files between small and large are yellow 🟡 | `10MB`        |
+| `fileSizeViewer.largeSize`  | Files larger than this are red 🔴           | `50MB`        |
 
-Users appreciate release notes as you update your extension.
+## 🛠️ Development
 
-### 1.0.0
+### Clone the repository
 
-Initial release of ...
+```sh
+git clone https://github.com/yourusername/file-size-viewer.git
+cd file-size-viewer
+npm install
+```
 
-### 1.0.1
+### Run in VS Code
 
-Fixed issue #.
+1. Open the project in VS Code
+2. Press `F5` to run the extension in a new **Extension Host Window**
 
-### 1.1.0
+## 📜 License
 
-Added features X, Y, and Z.
+MIT License © 2025 [Your Name](https://github.com/yashgupta18)
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+🌟 If you find this extension useful, **give it a star ⭐ on GitHub!**

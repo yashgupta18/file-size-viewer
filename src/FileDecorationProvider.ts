@@ -2,9 +2,6 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 
 export class FileSizeDecorationProvider implements vscode.FileDecorationProvider {
-  private readonly smallSize = 100 * 1024; // 100 KB
-  private readonly mediumSize = 1024 * 1024; // 1 MB
-
   onDidChangeFileDecorations?: vscode.Event<vscode.Uri | vscode.Uri[]>;
 
   provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {
@@ -60,11 +57,15 @@ export class FileSizeDecorationProvider implements vscode.FileDecorationProvider
     return totalSize;
   }
 
-
-
   private getSizeBadge(size: number): string {
-    if (size < this.smallSize) return "🟢"; // Small file
-    if (size < this.mediumSize) return "🟡"; // Medium file
+    // Fetch user-defined thresholds (or fallback to defaults)
+    const config = vscode.workspace.getConfiguration("fileSizeViewer");
+    const smallThreshold = config.get<number>("smallThreshold", 1048576); // Default: 1MB
+    const mediumThreshold = config.get<number>("mediumThreshold", 104857600); // Default: 100MB
+
+    // Apply dynamic size categorization
+    if (size < smallThreshold) return "🟢"; // Small file
+    if (size < mediumThreshold) return "🟡"; // Medium file
     return "🔴"; // Large file
   }
 

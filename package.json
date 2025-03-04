@@ -3,8 +3,13 @@
   "displayName": "file-size-viewer",
   "description": "View file size of each file in your project",
   "version": "0.0.1",
+  "publisher": "yash-c71e123f-dc39-4c65-82bf-a7e6c9278f10",
   "engines": {
     "vscode": "^1.97.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yashgupta18/file-size-viewer.git"
   },
   "categories": [
     "Other"
@@ -26,7 +31,22 @@
         "command": "fileSizeViewer.refresh",
         "title": "Refresh File Size Viewer"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "File Size Viewer",
+      "properties": {
+        "fileSizeViewer.smallThreshold": {
+          "type": "number",
+          "default": 1048576,
+          "description": "Max size (in bytes) for a file to be considered small. Default is 1MB"
+        },
+        "fileSizeViewer.mediumThreshold": {
+          "type": "number",
+          "default": 104857600,
+          "description": "Max size (in bytes) for a file to be considered medium. Default is 100MB"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
