@@ -14,6 +14,7 @@ Display file sizes directly in the VS Code file explorer!
 ✅ **Exclusion patterns** to skip node_modules, .git, and other folders you don't want to scan.
 ✅ **Configurable recursion depth** for deep directory structures.
 ✅ **Explorer context actions** - Copy file size, open largest file, show top files.
+✅ **Interactive Dashboard** - View top largest files across your workspace with sorting, filtering, and search.
 ✅ Option to disable folder size calculation for very large repositories.
 
 ## 📥 Installation
@@ -36,6 +37,32 @@ Display file sizes directly in the VS Code file explorer!
 ## 🚀 Usage
 
 Once installed, file sizes will appear next to files in the **Explorer**.
+
+### Activity Bar
+
+Click the **File Size Viewer** icon in the Activity Bar (left sidebar) to:
+- 📊 View quick workspace statistics
+- 💾 See total files and total size
+- 🔴 Find your largest file
+- 📈 Open the full dashboard with one click
+
+### Dashboard
+
+Open the interactive dashboard to analyze file sizes across your entire workspace:
+
+**Method 1:** Click the **File Size Viewer** icon in the Activity Bar, then click "Open Dashboard"
+
+**Method 2:** Use the Command Palette:
+1. **Open Command Palette** (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+2. Type: **"File Size Viewer: Open Dashboard"**
+
+Dashboard features:
+   - 📊 View top 50-500 largest files
+   - 🔍 Search and filter by name or extension
+   - 📈 See total size statistics
+   - 🎯 Sort by size, name, extension, or path
+   - 📂 Open files or reveal in Explorer with one click
+   - 📋 Copy file paths to clipboard
 
 ### Quick Actions
 

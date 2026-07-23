@@ -34,10 +34,10 @@ Target: speed, trust, and customization for all users.
 
 Target: a dedicated page for analysis, sorting, and filtering.
 
-### 5. Dedicated Dashboard Page (Webview)
-- Create a command to open a separate dashboard page.
-- Show top N largest files/folders.
-- Provide sorting by size, path, extension, and file type.
+### 5. Dedicated Dashboard Page (Webview) ✅ COMPLETED
+- ✅ Create a command to open a separate dashboard page.
+- ✅ Show top N largest files/folders.
+- ✅ Provide sorting by size, path, extension, and file type.
 
 ### 6. Filters and Presets
 - Add min/max size filters.

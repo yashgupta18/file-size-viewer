@@ -33,6 +33,11 @@
         "title": "Refresh File Size Viewer"
       },
       {
+        "command": "fileSizeViewer.openDashboard",
+        "title": "File Size Viewer: Open Dashboard",
+        "icon": "$(graph)"
+      },
+      {
         "command": "fileSizeViewer.copyFileSize",
         "title": "Copy File Size"
       },
@@ -45,7 +50,37 @@
         "title": "Show Top Files in Folder"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "fileSizeViewer",
+          "title": "File Size Viewer",
+          "icon": "$(file-binary)"
+        }
+      ]
+    },
+    "views": {
+      "fileSizeViewer": [
+        {
+          "id": "fileSizeViewer.sidebarView",
+          "name": "File Size Analysis"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "fileSizeViewer.sidebarView",
+        "contents": "Analyze file sizes across your workspace.\n[Open Dashboard](command:fileSizeViewer.openDashboard)\n[Refresh File Explorer](command:fileSizeViewer.refresh)"
+      }
+    ],
     "menus": {
+      "view/title": [
+        {
+          "command": "fileSizeViewer.openDashboard",
+          "when": "view == fileSizeViewer.sidebarView",
+          "group": "navigation"
+        }
+      ],
       "explorer/context": [
         {
           "command": "fileSizeViewer.copyFileSize",

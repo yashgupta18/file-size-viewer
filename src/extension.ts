@@ -1,9 +1,17 @@
 import * as vscode from "vscode";
 import { FileSizeDecorationProvider } from "./FileDecorationProvider";
+import { DashboardPanel } from "./DashboardPanel";
+import { SidebarProvider } from "./SidebarProvider";
 
 export function activate(context: vscode.ExtensionContext) {
   const decorationProvider = new FileSizeDecorationProvider();
   console.log("File size decoration provider is active");
+
+  // Create sidebar provider
+  const sidebarProvider = new SidebarProvider(decorationProvider);
+  const treeView = vscode.window.createTreeView("fileSizeViewer.sidebarView", {
+    treeDataProvider: sidebarProvider,
+  });
 
   // File system watchers for cache invalidation
   const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*");
@@ -12,9 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerFileDecorationProvider(decorationProvider),
     decorationProvider,
+    treeView,
     vscode.commands.registerCommand("fileSizeViewer.refresh", () => {
       decorationProvider.clearCache();
       decorationProvider.reloadConfiguration();
+      sidebarProvider.refresh();
       return vscode.commands.executeCommand(
         "workbench.files.action.refreshFilesExplorer",
       );
@@ -111,9 +121,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
       },
     ),
+    vscode.commands.registerCommand("fileSizeViewer.openDashboard", () => {
+      DashboardPanel.createOrShow(context.extensionUri, decorationProvider);
+    }),
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("fileSizeViewer")) {
         decorationProvider.reloadConfiguration();
+        sidebarProvider.refresh();
         console.log(
           "FileSizeViewer settings updated. Refreshing file explorer...",
         );
@@ -124,12 +138,15 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     fileWatcher.onDidCreate((uri) => {
       decorationProvider.invalidatePath(uri.fsPath);
+      sidebarProvider.refresh();
     }),
     fileWatcher.onDidChange((uri) => {
       decorationProvider.invalidatePath(uri.fsPath);
+      sidebarProvider.refresh();
     }),
     fileWatcher.onDidDelete((uri) => {
       decorationProvider.invalidatePath(uri.fsPath);
+      sidebarProvider.refresh();
     }),
     fileWatcher,
   );
