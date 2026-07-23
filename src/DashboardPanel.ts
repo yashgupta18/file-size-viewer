@@ -622,12 +622,13 @@ export class DashboardPanel {
       padding: 8px;
       color: white;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       text-align: center;
       cursor: pointer;
       overflow: hidden;
       transition: opacity 0.2s;
       border-radius: 2px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .treemap-item:hover {
@@ -638,12 +639,14 @@ export class DashboardPanel {
     .treemap-label {
       word-break: break-word;
       line-height: 1.2;
+      font-weight: 600;
     }
 
     .treemap-size {
-      font-size: 10px;
-      opacity: 0.9;
-      margin-top: 4px;
+      font-size: 9px;
+      opacity: 0.95;
+      margin-top: 2px;
+      font-weight: 500;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -1203,7 +1206,9 @@ export class DashboardPanel {
         const folder = parts.length > 0 ? parts[0] : '(root)';
 
         if (!folderSizes[folder]) {
-          folderSizes[folder] = { size: 0, files: [] };
+          // Store first file's directory path to use for folder revelation
+          const folderPath = file.path.substring(0, file.path.lastIndexOf(relativePath) + folder.length);
+          folderSizes[folder] = { size: 0, files: [], folderPath: folderPath };
         }
         folderSizes[folder].size += file.size;
         folderSizes[folder].files.push(file);
@@ -1232,9 +1237,10 @@ export class DashboardPanel {
         item.style.flex = \`\${percentage} 1 0%\`;
         item.style.minWidth = \`\${Math.max(percentage, 10)}%\`;
         item.style.backgroundColor = colors[index % colors.length];
-        item.title = \`\${folder}: \${formatSize(data.size)} (\${data.files.length} files)\`;
+        item.title = \`\${folder}: \${formatSize(data.size)} (\${data.files.length} files)\nClick to reveal in Explorer\`;
 
-        const shouldShowText = percentage > 5;
+        // Show text for folders with at least 2% of total size
+        const shouldShowText = percentage > 2;
 
         item.innerHTML = \`
           <div>
@@ -1243,12 +1249,11 @@ export class DashboardPanel {
           </div>
         \`;
 
-        // Click handler - open largest file in folder
+        // Click handler - reveal folder in explorer
         item.addEventListener('click', () => {
-          const largestInFolder = data.files.reduce((max, f) => f.size > max.size ? f : max);
           vscode.postMessage({
-            command: 'openFile',
-            filePath: largestInFolder.path
+            command: 'revealInExplorer',
+            filePath: data.folderPath
           });
         });
 
