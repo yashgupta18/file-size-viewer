@@ -15,9 +15,7 @@ Display file sizes directly in the VS Code file explorer!
 ✅ **Configurable recursion depth** for deep directory structures.
 ✅ **Explorer context actions** - Copy file size, open largest file, show top files.
 ✅ **Interactive Dashboard** - View top largest files across your workspace with sorting, filtering, and search.
-✅ Option to disable folder size calculation for very large repositories.
-
-## 📥 Installation
+✅ **Visual Analytics** - Bar charts and treemaps to visualize file size distribution with clickable elements.
 
 ### From the VS Code Marketplace
 
@@ -65,6 +63,7 @@ Dashboard features:
    - 📋 Copy file paths to clipboard
    - 🎛️ **Advanced Filters**: Min/max size, folder path filtering
    - 💾 **Save and load filter presets** for quick analysis
+   - 📊 **Interactive Charts**: Bar chart of top files and treemap of folder distribution (click to open files)
 
 ### Quick Actions
 

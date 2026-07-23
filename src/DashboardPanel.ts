@@ -551,7 +551,98 @@ export class DashboardPanel {
       font-size: 12px;
       padding: 6px 12px;
     }
+
+    .charts-section {
+      margin: 20px 0;
+      padding: 20px;
+      background-color: var(--vscode-editor-background);
+      border: 1px solid var(--vscode-panel-border);
+      border-radius: 4px;
+    }
+
+    .charts-toggle {
+      margin-bottom: 15px;
+    }
+
+    .charts-toggle button {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    .charts-container {
+      display: none;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .chart-card {
+      flex: 1;
+      min-width: 400px;
+      padding: 15px;
+      background-color: var(--vscode-sideBar-background);
+      border: 1px solid var(--vscode-panel-border);
+      border-radius: 4px;
+    }
+
+    .chart-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--vscode-foreground);
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 300px;
+      margin-top: 10px;
+    }
+
+    .treemap-container {
+      position: relative;
+      height: 300px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid var(--vscode-panel-border);
+      border-radius: 4px;
+      background-color: var(--vscode-editor-background);
+    }
+
+    .treemap-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      color: white;
+      font-size: 11px;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: opacity 0.2s;
+      border-radius: 2px;
+    }
+
+    .treemap-item:hover {
+      opacity: 0.8;
+      outline: 2px solid var(--vscode-focusBorder);
+    }
+
+    .treemap-label {
+      word-break: break-word;
+      line-height: 1.2;
+    }
+
+    .treemap-size {
+      font-size: 10px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <h1>📊 File Size Dashboard</h1>
@@ -625,6 +716,26 @@ export class DashboardPanel {
     </div>
   </div>
 
+  <div class="charts-section">
+    <div class="charts-toggle">
+      <button id="toggleChartsBtn" class="secondary-btn">📊 Show Charts</button>
+    </div>
+    <div class="charts-container" id="chartsContainer">
+      <div class="chart-card">
+        <div class="chart-title">Top Files by Size</div>
+        <div class="chart-wrapper">
+          <canvas id="topFilesChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Folder Size Distribution</div>
+        <div class="treemap-container" id="treemapContainer">
+          <!-- Treemap will be dynamically generated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="table-container">
     <div id="loading" class="loading">Loading files...</div>
     <div id="empty" class="empty" style="display: none;">No files found</div>
@@ -694,6 +805,22 @@ export class DashboardPanel {
       } else {
         advFilters.style.display = 'none';
         toggleBtn.textContent = '🔽 Show Advanced Filters';
+      }
+    });
+
+    document.getElementById('toggleChartsBtn').addEventListener('click', () => {
+      const chartsContainer = document.getElementById('chartsContainer');
+      const toggleBtn = document.getElementById('toggleChartsBtn');
+      if (chartsContainer.style.display === 'none') {
+        chartsContainer.style.display = 'flex';
+        toggleBtn.textContent = '📊 Hide Charts';
+        // Render charts when shown
+        const limit = document.getElementById('limitSelect').value;
+        const displayFiles = limit === 'all' ? filteredFiles : filteredFiles.slice(0, parseInt(limit));
+        renderCharts(displayFiles);
+      } else {
+        chartsContainer.style.display = 'none';
+        toggleBtn.textContent = '📊 Show Charts';
       }
     });
 
@@ -968,6 +1095,158 @@ export class DashboardPanel {
       document.getElementById('totalSize').textContent = formatSize(totalSize);
       document.getElementById('largestFile').textContent = largest ? largest.formattedSize : '-';
       document.getElementById('showingCount').textContent = displayFiles.length;
+
+      // Update charts if visible
+      if (document.getElementById('chartsContainer').style.display !== 'none') {
+        renderCharts(displayFiles);
+      }
+    }
+
+    let topFilesChartInstance = null;
+
+    function renderCharts(files) {
+      renderTopFilesChart(files);
+      renderTreemap(files);
+    }
+
+    function renderTopFilesChart(files) {
+      const ctx = document.getElementById('topFilesChart');
+
+      // Destroy existing chart
+      if (topFilesChartInstance) {
+        topFilesChartInstance.destroy();
+      }
+
+      // Get top 10 files
+      const topFiles = files.slice(0, 10);
+
+      // Prepare data
+      const labels = topFiles.map(f => f.name.length > 20 ? f.name.substring(0, 17) + '...' : f.name);
+      const data = topFiles.map(f => f.size / (1024 * 1024)); // Convert to MB
+      const paths = topFiles.map(f => f.path);
+
+      // Create chart
+      topFilesChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Size (MB)',
+            data: data,
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              vscode.postMessage({
+                command: 'openFile',
+                filePath: paths[index]
+              });
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const file = topFiles[context.dataIndex];
+                  return [
+                    \`Size: \${file.formattedSize}\`,
+                    \`Path: \${file.path}\`
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Size (MB)'
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTreemap(files) {
+      const container = document.getElementById('treemapContainer');
+      container.innerHTML = '';
+
+      // Group files by folder
+      const folderSizes = {};
+      files.forEach(file => {
+        const parts = file.path.split('/');
+        const folder = parts.length > 1 ? parts[0] : 'root';
+
+        if (!folderSizes[folder]) {
+          folderSizes[folder] = { size: 0, files: [] };
+        }
+        folderSizes[folder].size += file.size;
+        folderSizes[folder].files.push(file);
+      });
+
+      // Sort folders by size
+      const sortedFolders = Object.entries(folderSizes)
+        .sort((a, b) => b[1].size - a[1].size)
+        .slice(0, 15); // Show top 15 folders
+
+      // Calculate total for percentage
+      const totalSize = sortedFolders.reduce((sum, [_, data]) => sum + data.size, 0);
+
+      // Generate colors
+      const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52B788',
+        '#EF476F', '#FFD166', '#06FFA5', '#118AB2', '#073B4C'
+      ];
+
+      // Create treemap items
+      sortedFolders.forEach(([folder, data], index) => {
+        const percentage = (data.size / totalSize) * 100;
+        const item = document.createElement('div');
+        item.className = 'treemap-item';
+        item.style.flex = \`\${percentage} 1 0%\`;
+        item.style.minWidth = \`\${Math.max(percentage, 10)}%\`;
+        item.style.backgroundColor = colors[index % colors.length];
+        item.title = \`\${folder}: \${formatSize(data.size)} (\${data.files.length} files)\`;
+
+        const shouldShowText = percentage > 5;
+
+        item.innerHTML = \`
+          <div>
+            <div class="treemap-label">\${shouldShowText ? folder : ''}</div>
+            <div class="treemap-size">\${shouldShowText ? formatSize(data.size) : ''}</div>
+          </div>
+        \`;
+
+        // Click handler - open largest file in folder
+        item.addEventListener('click', () => {
+          const largestInFolder = data.files.reduce((max, f) => f.size > max.size ? f : max);
+          vscode.postMessage({
+            command: 'openFile',
+            filePath: largestInFolder.path
+          });
+        });
+
+        container.appendChild(item);
+      });
     }
 
     function formatSize(bytes) {

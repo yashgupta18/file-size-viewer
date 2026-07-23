@@ -45,10 +45,10 @@ Target: a dedicated page for analysis, sorting, and filtering.
 - ✅ Add folder/path filters.
 - ✅ Save and reuse filter presets.
 
-### 7. Graphs and Visual Analytics
-- Add top-files bar chart.
-- Add folder distribution treemap.
-- Click chart items to open files in editor.
+### 7. Graphs and Visual Analytics ✅ COMPLETED
+- ✅ Add top-files bar chart.
+- ✅ Add folder distribution treemap.
+- ✅ Click chart items to open files in editor.
 
 ## Batch 3: Reporting and Insights
 
