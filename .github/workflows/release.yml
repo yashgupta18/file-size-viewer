@@ -1,11 +1,6 @@
 name: Release Extension
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "package.json"
   workflow_run:
     workflows: ["Bump Version"]
     types:
