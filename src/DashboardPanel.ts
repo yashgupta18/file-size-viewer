@@ -149,19 +149,23 @@ export class DashboardPanel {
   private async saveFilterPreset(name: string, preset: any): Promise<void> {
     const config = vscode.workspace.getConfiguration("fileSizeViewer");
     const presets = config.get<Record<string, any>>("filterPresets", {});
-    
+
     presets[name] = preset;
-    
-    await config.update("filterPresets", presets, vscode.ConfigurationTarget.Global);
+
+    await config.update(
+      "filterPresets",
+      presets,
+      vscode.ConfigurationTarget.Global,
+    );
     void vscode.window.showInformationMessage(`Filter preset "${name}" saved`);
-    
+
     await this.loadFilterPresets();
   }
 
   private async loadFilterPresets(): Promise<void> {
     const config = vscode.workspace.getConfiguration("fileSizeViewer");
     const presets = config.get<Record<string, any>>("filterPresets", {});
-    
+
     void this.panel.webview.postMessage({
       command: "presetsLoaded",
       presets,
@@ -171,12 +175,18 @@ export class DashboardPanel {
   private async deleteFilterPreset(name: string): Promise<void> {
     const config = vscode.workspace.getConfiguration("fileSizeViewer");
     const presets = config.get<Record<string, any>>("filterPresets", {});
-    
+
     delete presets[name];
-    
-    await config.update("filterPresets", presets, vscode.ConfigurationTarget.Global);
-    void vscode.window.showInformationMessage(`Filter preset "${name}" deleted`);
-    
+
+    await config.update(
+      "filterPresets",
+      presets,
+      vscode.ConfigurationTarget.Global,
+    );
+    void vscode.window.showInformationMessage(
+      `Filter preset "${name}" deleted`,
+    );
+
     await this.loadFilterPresets();
   }
 
@@ -487,13 +497,33 @@ export class DashboardPanel {
 
     .preset-controls {
       display: flex;
-      gap: 10px;
-      align-items: center;
+      gap: 15px;
+      align-items: flex-start;
       flex-wrap: wrap;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--vscode-panel-border);
+    }
+
+    .preset-save-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .preset-load-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex: 1;
+      min-width: 250px;
     }
 
     .preset-select {
-      min-width: 200px;
+      flex: 1;
+      min-width: 150px;
       padding: 6px 10px;
       background-color: var(--vscode-dropdown-background);
       color: var(--vscode-dropdown-foreground);
@@ -559,11 +589,16 @@ export class DashboardPanel {
       </div>
     </div>
     <div class="preset-controls">
-      <button id="savePresetBtn" class="secondary-btn">💾 Save Preset</button>
-      <select id="presetSelect" class="preset-select">
-        <option value="">Load Preset...</option>
-      </select>
-      <button id="deletePresetBtn" class="secondary-btn">🗑️ Delete Preset</button>
+      <div class="preset-save-group">
+        <input type="text" id="presetNameInput" placeholder="Preset name (e.g., Large Source Files)" class="filter-input" style="min-width: 250px;">
+        <button id="savePresetBtn" class="secondary-btn">💾 Save Preset</button>
+      </div>
+      <div class="preset-load-group">
+        <select id="presetSelect" class="preset-select">
+          <option value="">Load Preset...</option>
+        </select>
+        <button id="deletePresetBtn" class="secondary-btn">🗑️ Delete</button>
+      </div>
     </div>
   </div>
 
@@ -663,8 +698,13 @@ export class DashboardPanel {
     });
 
     document.getElementById('savePresetBtn').addEventListener('click', async () => {
-      const name = prompt('Enter preset name:');
-      if (!name) return;
+      const nameInput = document.getElementById('presetNameInput');
+      const name = nameInput.value.trim();
+
+      if (!name) {
+        alert('Please enter a preset name');
+        return;
+      }
 
       const preset = {
         search: document.getElementById('searchBox').value,
@@ -680,6 +720,9 @@ export class DashboardPanel {
         presetName: name,
         preset
       });
+
+      // Clear the input after saving
+      nameInput.value = '';
     });
 
     document.getElementById('presetSelect').addEventListener('change', (e) => {
