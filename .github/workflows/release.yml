@@ -30,6 +30,17 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Wait for push to propagate
+        if: github.event_name == 'workflow_run'
+        run: sleep 10
+
+      - name: Pull latest changes
+        if: github.event_name == 'workflow_run'
+        run: |
+          git pull origin main
+          echo "Current commit:"
+          git log -1 --oneline
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -42,11 +53,20 @@ jobs:
       - name: Get version from package.json
         id: package_version
         run: |
+          echo "=== Debugging Version Info ==="
+          echo "Current directory: $(pwd)"
+          echo "Git branch: $(git branch --show-current)"
+          echo "Latest commit: $(git log -1 --oneline)"
+          echo "package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+          echo "CHANGELOG.md exists: $(test -f CHANGELOG.md && echo 'yes' || echo 'no')"
+
           if [ -n "${{ github.event.inputs.version }}" ]; then
             VERSION="${{ github.event.inputs.version }}"
           else
             VERSION=$(node -p "require('./package.json').version")
           fi
+
+          echo "Detected version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
 
