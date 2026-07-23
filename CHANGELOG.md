@@ -4,20 +4,27 @@ All notable changes to the "file-size-viewer" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [0.1.0] - 2026-07-23
 
 ### Added
 - **Smart Caching**: File and folder sizes are now cached for improved performance
-- **Automatic Cache Invalidation**: Cache automatically updates when files are created, modified, or deleted
-- **Exclusion Patterns**: Configure folders and files to exclude from size calculation (e.g., node_modules, .git, dist)
-- **Configurable Recursion Depth**: Set maximum folder depth for recursive size calculation
+- **Automatic Cache Invalidation**: Cache automatically updates when files are created, modified, or deleted via file system watchers
+- **Exclusion Patterns**: Configure folders and files to exclude from size calculation (default: node_modules, .git, dist, out, build, .vscode)
+- **Configurable Recursion Depth**: Set maximum folder depth for recursive size calculation (default: 10, range: 1-50)
 - **Toggle Folder Size Calculation**: Option to disable folder size calculation for very large repositories
 - **Wildcard Support**: Exclusion patterns support wildcards (e.g., *.log, *.tmp)
+- **Cache Control**: Option to enable/disable caching via settings
 
 ### Changed
 - Improved performance for large repositories with smart caching
-- Better resource management with proper disposal of file watchers
-- Enhanced logging for debugging cache behavior
+- Better resource management with proper disposal of file watchers and EventEmitter
+- Enhanced cache invalidation on file create, change, and delete events
+- Optimized folder size calculation with depth limits and exclusions
+
+### Performance
+- Cached results reduce repeated file system scans
+- Excluded folders (like node_modules) are skipped automatically
+- Configurable depth limits prevent excessive recursion
 
 ## [0.0.4] - 2026-07-23
 
