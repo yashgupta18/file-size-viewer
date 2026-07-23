@@ -71,6 +71,65 @@ export class FileSizeDecorationProvider
     console.log(`[FileSizeViewer] Invalidated cache for: ${filePath}`);
   }
 
+  /**
+   * Get the size of a file or folder (public API for commands)
+   */
+  public async getSize(filePath: string): Promise<number | null> {
+    return this.getFileSize(filePath);
+  }
+
+  /**
+   * Format a size in bytes to human-readable format (public API)
+   */
+  public formatSizePublic(size: number): string {
+    return this.formatSize(size);
+  }
+
+  /**
+   * Find the largest files in a directory
+   */
+  public async findLargestFiles(
+    folderPath: string,
+    limit: number = 10,
+  ): Promise<Array<{ path: string; size: number }>> {
+    const files: Array<{ path: string; size: number }> = [];
+
+    try {
+      const entries = await fs.promises.readdir(folderPath, {
+        withFileTypes: true,
+      });
+
+      for (const entry of entries) {
+        if (this.shouldExclude(entry.name)) {
+          continue;
+        }
+
+        const fullPath = path.join(folderPath, entry.name);
+
+        try {
+          if (entry.isFile()) {
+            const stats = await fs.promises.stat(fullPath);
+            files.push({ path: fullPath, size: stats.size });
+          } else if (
+            entry.isDirectory() &&
+            this.config.enableFolderSizeCalculation
+          ) {
+            const size = await this.getFolderSize(fullPath, 0);
+            files.push({ path: fullPath, size });
+          }
+        } catch {
+          // Skip files that can't be accessed
+        }
+      }
+
+      // Sort by size descending and take top N
+      return files.sort((a, b) => b.size - a.size).slice(0, limit);
+    } catch (error) {
+      console.error(`Error finding largest files in: ${folderPath}`, error);
+      return [];
+    }
+  }
+
   provideFileDecoration(
     uri: vscode.Uri,
   ): vscode.ProviderResult<vscode.FileDecoration> {

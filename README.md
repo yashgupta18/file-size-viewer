@@ -13,6 +13,7 @@ Display file sizes directly in the VS Code file explorer!
 ✅ **Smart caching** for improved performance - cache is automatically invalidated on file changes.
 ✅ **Exclusion patterns** to skip node_modules, .git, and other folders you don't want to scan.
 ✅ **Configurable recursion depth** for deep directory structures.
+✅ **Explorer context actions** - Copy file size, open largest file, show top files.
 ✅ Option to disable folder size calculation for very large repositories.
 
 ## 📥 Installation
@@ -36,13 +37,25 @@ Display file sizes directly in the VS Code file explorer!
 
 Once installed, file sizes will appear next to files in the **Explorer**.
 
+### Quick Actions
+
+Right-click any file or folder in the Explorer to access these actions:
+
+- **Copy File Size** - Copy the size of a file or folder to clipboard
+- **Open Largest File in Folder** - Quickly open the largest file in a folder
+- **Show Top Files in Folder** - View and select from the top 20 largest files in a folder
+
+### Configuration
+
 - **Set File Size Thresholds**
   Go to **Settings (`Ctrl + ,`)** and search for `File Size Viewer`.
   Customize thresholds for **small**, **medium**, and **large** files.
 
+- **Configure Exclusions**
+  Add patterns to exclude from size calculation (default: `node_modules`, `.git`, etc.)
+
 - **Refresh File Sizes**
-  If file sizes are not updating, right-click the explorer and click:
-  `Refresh File Size Viewer`.
+  Right-click the explorer and select: `Refresh File Size Viewer`
 
 ## ⚙️ Configuration
 

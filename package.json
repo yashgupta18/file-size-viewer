@@ -31,8 +31,39 @@
       {
         "command": "fileSizeViewer.refresh",
         "title": "Refresh File Size Viewer"
+      },
+      {
+        "command": "fileSizeViewer.copyFileSize",
+        "title": "Copy File Size"
+      },
+      {
+        "command": "fileSizeViewer.openLargestFile",
+        "title": "Open Largest File in Folder"
+      },
+      {
+        "command": "fileSizeViewer.showTopFiles",
+        "title": "Show Top Files in Folder"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "fileSizeViewer.copyFileSize",
+          "group": "fileSizeViewer@1",
+          "when": "explorerResourceIsFolder || !explorerResourceIsFolder"
+        },
+        {
+          "command": "fileSizeViewer.openLargestFile",
+          "group": "fileSizeViewer@2",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "fileSizeViewer.showTopFiles",
+          "group": "fileSizeViewer@3",
+          "when": "explorerResourceIsFolder"
+        }
+      ]
+    },
     "configuration": {
       "title": "File Size Viewer",
       "properties": {

@@ -25,10 +25,10 @@ Target: speed, trust, and customization for all users.
 - ✅ Invalidate cache on file create/change/delete via workspace watchers.
 - ✅ Keep manual refresh command as a fallback force-refresh.
 
-### 4. Explorer Context Actions
-- Copy file size for selected file/folder.
-- Open largest file in selected folder.
-- Show top files in selected folder (quick pick action).
+### 4. Explorer Context Actions ✅ COMPLETED
+- ✅ Copy file size for selected file/folder.
+- ✅ Open largest file in selected folder.
+- ✅ Show top files in selected folder (quick pick action).
 
 ## Batch 2: Dashboard and Visualizations
 
