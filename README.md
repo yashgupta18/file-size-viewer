@@ -63,6 +63,8 @@ Dashboard features:
    - 🎯 Sort by size, name, extension, or path
    - 📂 Open files or reveal in Explorer with one click
    - 📋 Copy file paths to clipboard
+   - 🎛️ **Advanced Filters**: Min/max size, folder path filtering
+   - 💾 **Save and load filter presets** for quick analysis
 
 ### Quick Actions
 

@@ -39,11 +39,11 @@ Target: a dedicated page for analysis, sorting, and filtering.
 - ✅ Show top N largest files/folders.
 - ✅ Provide sorting by size, path, extension, and file type.
 
-### 6. Filters and Presets
-- Add min/max size filters.
-- Add extension filters (for example: `.log`, `.mp4`, `.map`).
-- Add folder/path filters.
-- Save and reuse filter presets.
+### 6. Filters and Presets ✅ COMPLETED
+- ✅ Add min/max size filters.
+- ✅ Add extension filters (for example: `.log`, `.mp4`, `.map`).
+- ✅ Add folder/path filters.
+- ✅ Save and reuse filter presets.
 
 ### 7. Graphs and Visual Analytics
 - Add top-files bar chart.

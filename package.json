@@ -157,6 +157,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enable caching of computed file/folder sizes for better performance. Cache is automatically invalidated on file changes."
+        },
+        "fileSizeViewer.filterPresets": {
+          "type": "object",
+          "default": {},
+          "description": "Saved filter presets for the dashboard. Managed automatically through the dashboard UI."
         }
       }
     }

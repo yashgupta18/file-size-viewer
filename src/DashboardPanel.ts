@@ -102,6 +102,8 @@ export class DashboardPanel {
   private async handleMessage(message: {
     command: string;
     filePath?: string;
+    preset?: any;
+    presetName?: string;
   }): Promise<void> {
     switch (message.command) {
       case "refresh":
@@ -128,7 +130,54 @@ export class DashboardPanel {
       case "getFiles":
         await this.scanWorkspace();
         break;
+      case "savePreset":
+        if (message.preset && message.presetName) {
+          await this.saveFilterPreset(message.presetName, message.preset);
+        }
+        break;
+      case "loadPresets":
+        await this.loadFilterPresets();
+        break;
+      case "deletePreset":
+        if (message.presetName) {
+          await this.deleteFilterPreset(message.presetName);
+        }
+        break;
     }
+  }
+
+  private async saveFilterPreset(name: string, preset: any): Promise<void> {
+    const config = vscode.workspace.getConfiguration("fileSizeViewer");
+    const presets = config.get<Record<string, any>>("filterPresets", {});
+    
+    presets[name] = preset;
+    
+    await config.update("filterPresets", presets, vscode.ConfigurationTarget.Global);
+    void vscode.window.showInformationMessage(`Filter preset "${name}" saved`);
+    
+    await this.loadFilterPresets();
+  }
+
+  private async loadFilterPresets(): Promise<void> {
+    const config = vscode.workspace.getConfiguration("fileSizeViewer");
+    const presets = config.get<Record<string, any>>("filterPresets", {});
+    
+    void this.panel.webview.postMessage({
+      command: "presetsLoaded",
+      presets,
+    });
+  }
+
+  private async deleteFilterPreset(name: string): Promise<void> {
+    const config = vscode.workspace.getConfiguration("fileSizeViewer");
+    const presets = config.get<Record<string, any>>("filterPresets", {});
+    
+    delete presets[name];
+    
+    await config.update("filterPresets", presets, vscode.ConfigurationTarget.Global);
+    void vscode.window.showInformationMessage(`Filter preset "${name}" deleted`);
+    
+    await this.loadFilterPresets();
   }
 
   private async scanWorkspace(): Promise<void> {
@@ -397,6 +446,81 @@ export class DashboardPanel {
       padding: 40px;
       color: var(--vscode-descriptionForeground);
     }
+
+    .advanced-filters {
+      margin-bottom: 15px;
+      padding: 15px;
+      background-color: var(--vscode-editor-inactiveSelectionBackground);
+      border-radius: 4px;
+      border: 1px solid var(--vscode-panel-border);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .filter-group label {
+      font-size: 11px;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .filter-input {
+      padding: 6px 10px;
+      background-color: var(--vscode-input-background);
+      color: var(--vscode-input-foreground);
+      border: 1px solid var(--vscode-input-border);
+      border-radius: 2px;
+      font-size: 13px;
+    }
+
+    .preset-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .preset-select {
+      min-width: 200px;
+      padding: 6px 10px;
+      background-color: var(--vscode-dropdown-background);
+      color: var(--vscode-dropdown-foreground);
+      border: 1px solid var(--vscode-dropdown-border);
+      border-radius: 2px;
+      font-size: 13px;
+    }
+
+    .secondary-btn {
+      background-color: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .secondary-btn:hover {
+      background-color: var(--vscode-button-secondaryHoverBackground);
+    }
+
+    .filter-toggle {
+      margin-bottom: 15px;
+    }
+
+    .filter-toggle button {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
   </style>
 </head>
 <body>
@@ -417,6 +541,34 @@ export class DashboardPanel {
         <option value="all">All Files</option>
       </select>
     </div>
+  </div>
+
+  <div class="advanced-filters" id="advancedFilters" style="display: none;">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>Min Size:</label>
+        <input type="text" id="minSize" placeholder="e.g., 1MB" class="filter-input">
+      </div>
+      <div class="filter-group">
+        <label>Max Size:</label>
+        <input type="text" id="maxSize" placeholder="e.g., 100MB" class="filter-input">
+      </div>
+      <div class="filter-group">
+        <label>Folder Path Contains:</label>
+        <input type="text" id="folderFilter" placeholder="e.g., src" class="filter-input">
+      </div>
+    </div>
+    <div class="preset-controls">
+      <button id="savePresetBtn" class="secondary-btn">💾 Save Preset</button>
+      <select id="presetSelect" class="preset-select">
+        <option value="">Load Preset...</option>
+      </select>
+      <button id="deletePresetBtn" class="secondary-btn">🗑️ Delete Preset</button>
+    </div>
+  </div>
+
+  <div class="filter-toggle">
+    <button id="toggleFiltersBtn" class="secondary-btn">🔽 Show Advanced Filters</button>
   </div>
 
   <div class="stats" id="stats" style="display: none;">
@@ -485,6 +637,81 @@ export class DashboardPanel {
       filterAndRender();
     });
 
+    // Advanced filter event listeners
+    document.getElementById('minSize').addEventListener('input', () => {
+      filterAndRender();
+    });
+
+    document.getElementById('maxSize').addEventListener('input', () => {
+      filterAndRender();
+    });
+
+    document.getElementById('folderFilter').addEventListener('input', () => {
+      filterAndRender();
+    });
+
+    document.getElementById('toggleFiltersBtn').addEventListener('click', () => {
+      const advFilters = document.getElementById('advancedFilters');
+      const toggleBtn = document.getElementById('toggleFiltersBtn');
+      if (advFilters.style.display === 'none') {
+        advFilters.style.display = 'block';
+        toggleBtn.textContent = '🔼 Hide Advanced Filters';
+      } else {
+        advFilters.style.display = 'none';
+        toggleBtn.textContent = '🔽 Show Advanced Filters';
+      }
+    });
+
+    document.getElementById('savePresetBtn').addEventListener('click', async () => {
+      const name = prompt('Enter preset name:');
+      if (!name) return;
+
+      const preset = {
+        search: document.getElementById('searchBox').value,
+        extension: document.getElementById('extensionFilter').value,
+        minSize: document.getElementById('minSize').value,
+        maxSize: document.getElementById('maxSize').value,
+        folderPath: document.getElementById('folderFilter').value,
+        limit: document.getElementById('limitSelect').value,
+      };
+
+      vscode.postMessage({
+        command: 'savePreset',
+        presetName: name,
+        preset
+      });
+    });
+
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      const selectedPreset = e.target.value;
+      if (!selectedPreset || !window.currentPresets || !window.currentPresets[selectedPreset]) return;
+
+      const preset = window.currentPresets[selectedPreset];
+      document.getElementById('searchBox').value = preset.search || '';
+      document.getElementById('extensionFilter').value = preset.extension || '';
+      document.getElementById('minSize').value = preset.minSize || '';
+      document.getElementById('maxSize').value = preset.maxSize || '';
+      document.getElementById('folderFilter').value = preset.folderPath || '';
+      document.getElementById('limitSelect').value = preset.limit || '100';
+
+      filterAndRender();
+    });
+
+    document.getElementById('deletePresetBtn').addEventListener('click', () => {
+      const selectedPreset = document.getElementById('presetSelect').value;
+      if (!selectedPreset) {
+        alert('Please select a preset to delete');
+        return;
+      }
+
+      if (confirm(\`Delete preset "\${selectedPreset}"?\`)) {
+        vscode.postMessage({
+          command: 'deletePreset',
+          presetName: selectedPreset
+        });
+      }
+    });
+
     document.querySelectorAll('th[data-sort]').forEach(th => {
       th.addEventListener('click', () => {
         const column = th.dataset.sort;
@@ -505,8 +732,26 @@ export class DashboardPanel {
         allFiles = message.files;
         populateExtensionFilter();
         filterAndRender();
+      } else if (message.command === 'presetsLoaded') {
+        window.currentPresets = message.presets;
+        populatePresetSelect(message.presets);
       }
     });
+
+    // Request presets on load
+    vscode.postMessage({ command: 'loadPresets' });
+
+    function populatePresetSelect(presets) {
+      const select = document.getElementById('presetSelect');
+      select.innerHTML = '<option value="">Load Preset...</option>';
+
+      Object.keys(presets).forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+    }
 
     function populateExtensionFilter() {
       const extensions = new Set(allFiles.map(f => f.extension));
@@ -524,6 +769,13 @@ export class DashboardPanel {
     function filterAndRender() {
       const searchTerm = document.getElementById('searchBox').value.toLowerCase();
       const extensionFilter = document.getElementById('extensionFilter').value;
+      const minSizeStr = document.getElementById('minSize').value;
+      const maxSizeStr = document.getElementById('maxSize').value;
+      const folderFilter = document.getElementById('folderFilter').value.toLowerCase();
+
+      // Parse size strings (supports KB, MB, GB)
+      const minSizeBytes = parseSizeString(minSizeStr);
+      const maxSizeBytes = parseSizeString(maxSizeStr);
 
       filteredFiles = allFiles.filter(file => {
         const matchesSearch = !searchTerm ||
@@ -532,10 +784,36 @@ export class DashboardPanel {
 
         const matchesExtension = !extensionFilter || file.extension === extensionFilter;
 
-        return matchesSearch && matchesExtension;
+        const matchesMinSize = minSizeBytes === null || file.size >= minSizeBytes;
+        const matchesMaxSize = maxSizeBytes === null || file.size <= maxSizeBytes;
+
+        const matchesFolder = !folderFilter || file.path.toLowerCase().includes(folderFilter);
+
+        return matchesSearch && matchesExtension && matchesMinSize && matchesMaxSize && matchesFolder;
       });
 
       renderFiles();
+    }
+
+    function parseSizeString(sizeStr) {
+      if (!sizeStr || sizeStr.trim() === '') return null;
+
+      const str = sizeStr.trim().toUpperCase();
+      const match = str.match(/^([0-9.]+)\\s*(B|KB|MB|GB)?$/);
+
+      if (!match) return null;
+
+      const value = parseFloat(match[1]);
+      const unit = match[2] || 'B';
+
+      const multipliers = {
+        'B': 1,
+        'KB': 1024,
+        'MB': 1024 * 1024,
+        'GB': 1024 * 1024 * 1024
+      };
+
+      return value * multipliers[unit];
     }
 
     function renderFiles() {
