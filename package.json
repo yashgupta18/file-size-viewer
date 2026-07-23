@@ -2,11 +2,12 @@
   "name": "file-size-viewer",
   "displayName": "file-size-viewer",
   "description": "View file size of each file in your project",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "publisher": "yash-c71e123f-dc39-4c65-82bf-a7e6c9278f10",
   "engines": {
     "vscode": "^1.97.0"
   },
+  "icon": "icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/yashgupta18/file-size-viewer.git"
@@ -35,15 +36,29 @@
     "configuration": {
       "title": "File Size Viewer",
       "properties": {
-        "fileSizeViewer.smallThreshold": {
+        "fileSizeViewer.greenMaxBytes": {
           "type": "number",
           "default": 1048576,
-          "description": "Max size (in bytes) for a file to be considered small. Default is 1MB"
+          "minimum": 0,
+          "description": "Maximum size (bytes) for the green band. Example: 1048576 = 1MB"
         },
-        "fileSizeViewer.mediumThreshold": {
+        "fileSizeViewer.yellowMinBytes": {
+          "type": "number",
+          "default": 1048577,
+          "minimum": 0,
+          "description": "Minimum size (bytes) for the yellow band. Example: 1048577 = 1MB + 1 byte"
+        },
+        "fileSizeViewer.yellowMaxBytes": {
           "type": "number",
           "default": 104857600,
-          "description": "Max size (in bytes) for a file to be considered medium. Default is 100MB"
+          "minimum": 0,
+          "description": "Maximum size (bytes) for the yellow band. Example: 104857600 = 100MB"
+        },
+        "fileSizeViewer.redMinBytes": {
+          "type": "number",
+          "default": 104857601,
+          "minimum": 0,
+          "description": "Minimum size (bytes) for the red band. Example: 104857601 = 100MB + 1 byte"
         }
       }
     }
@@ -57,14 +72,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.97.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
+    "@types/node": "^26.1.1",
+    "@types/vscode": "^1.97.0",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
-    "eslint": "^9.19.0",
-    "typescript": "^5.7.3",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^10.7.0",
+    "typescript": "^6.0.3"
   }
 }

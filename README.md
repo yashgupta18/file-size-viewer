@@ -47,9 +47,15 @@ Modify settings via VS Code settings:
 
 | Setting                     | Description                                 | Default Value |
 | --------------------------- | ------------------------------------------- | ------------- |
-| `fileSizeViewer.smallSize`  | Files smaller than this are green 🟢        | `1MB`         |
-| `fileSizeViewer.mediumSize` | Files between small and large are yellow 🟡 | `10MB`        |
-| `fileSizeViewer.largeSize`  | Files larger than this are red 🔴           | `50MB`        |
+| `fileSizeViewer.greenMaxBytes`  | Maximum bytes for green 🟢 band            | `1048576`     |
+| `fileSizeViewer.yellowMinBytes` | Minimum bytes for yellow 🟡 band           | `1048577`     |
+| `fileSizeViewer.yellowMaxBytes` | Maximum bytes for yellow 🟡 band           | `104857600`   |
+| `fileSizeViewer.redMinBytes`    | Minimum bytes for red 🔴 band              | `104857601`   |
+
+Notes:
+- Values are in bytes.
+- Example conversions: `1024 = 1KB`, `1048576 = 1MB`, `104857600 = 100MB`.
+- Validation rules: `greenMaxBytes < yellowMinBytes <= yellowMaxBytes < redMinBytes`.
 
 ## 🛠️ Development
 
