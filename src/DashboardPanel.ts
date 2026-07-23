@@ -4,6 +4,7 @@ import { FileSizeDecorationProvider } from "./FileDecorationProvider";
 
 interface FileItem {
   path: string;
+  relativePath: string;
   name: string;
   size: number;
   formattedSize: string;
@@ -233,9 +234,12 @@ export class DashboardPanel {
         if (size !== null) {
           const fileName = path.basename(fileUri.fsPath);
           const extension = path.extname(fileUri.fsPath);
+          // Get workspace-relative path for better folder grouping
+          const relativePath = path.relative(folderPath, fileUri.fsPath);
 
           items.push({
             path: fileUri.fsPath,
+            relativePath: relativePath,
             name: fileName,
             size,
             formattedSize: this.decorationProvider.formatSizePublic(size),
@@ -1189,11 +1193,14 @@ export class DashboardPanel {
       const container = document.getElementById('treemapContainer');
       container.innerHTML = '';
 
-      // Group files by folder
+      // Group files by top-level folder
       const folderSizes = {};
       files.forEach(file => {
-        const parts = file.path.split('/');
-        const folder = parts.length > 1 ? parts[0] : 'root';
+        // Use relativePath which is already workspace-relative
+        const relativePath = file.relativePath || file.path;
+        // Split by both / and \ to handle Windows and Unix paths
+        const parts = relativePath.split(/[\\/]/).filter(p => p.length > 0);
+        const folder = parts.length > 0 ? parts[0] : '(root)';
 
         if (!folderSizes[folder]) {
           folderSizes[folder] = { size: 0, files: [] };
