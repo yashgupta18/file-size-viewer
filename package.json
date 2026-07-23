@@ -59,6 +59,38 @@
           "default": 104857601,
           "minimum": 0,
           "description": "Minimum size (bytes) for the red band. Example: 104857601 = 100MB + 1 byte"
+        },
+        "fileSizeViewer.excludePatterns": {
+          "type": "array",
+          "default": [
+            "node_modules",
+            ".git",
+            "dist",
+            "out",
+            "build",
+            ".vscode"
+          ],
+          "description": "Folders and files to exclude from size calculation. Supports folder names and glob patterns.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileSizeViewer.maxRecursionDepth": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Maximum folder depth for recursive size calculation. Lower values improve performance in deep directory structures."
+        },
+        "fileSizeViewer.enableFolderSizeCalculation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable recursive folder size calculation. Disable this for very large repositories to improve performance."
+        },
+        "fileSizeViewer.enableCache": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable caching of computed file/folder sizes for better performance. Cache is automatically invalidated on file changes."
         }
       }
     }

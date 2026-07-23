@@ -10,20 +10,20 @@ Help VS Code users understand and manage file size health across their workspace
 
 Target: speed, trust, and customization for all users.
 
-### 1. Full Color-Range Customization
-- Allow users to define size limits for each color band (green, yellow, red).
-- Validate threshold rules so ranges do not overlap.
-- Improve settings descriptions with examples (bytes, KB, MB).
+### 1. Full Color-Range Customization ✅ COMPLETED
+- ✅ Allow users to define size limits for each color band (green, yellow, red).
+- ✅ Validate threshold rules so ranges do not overlap.
+- ✅ Improve settings descriptions with examples (bytes, KB, MB).
 
-### 2. Exclusions and Scan Guards
-- Add configurable exclude patterns (for example: `node_modules`, `.git`, `dist`, `build`).
-- Add optional max recursion depth for folder scans.
-- Add toggle to disable folder recursive size calculation in very large repos.
+### 2. Exclusions and Scan Guards ✅ COMPLETED
+- ✅ Add configurable exclude patterns (for example: `node_modules`, `.git`, `dist`, `build`).
+- ✅ Add optional max recursion depth for folder scans.
+- ✅ Add toggle to disable folder recursive size calculation in very large repos.
 
-### 3. Caching and Smart Invalidation
-- Cache computed file/folder sizes to reduce repeated scans.
-- Invalidate cache on file create/change/delete via workspace watchers.
-- Keep manual refresh command as a fallback force-refresh.
+### 3. Caching and Smart Invalidation ✅ COMPLETED
+- ✅ Cache computed file/folder sizes to reduce repeated scans.
+- ✅ Invalidate cache on file create/change/delete via workspace watchers.
+- ✅ Keep manual refresh command as a fallback force-refresh.
 
 ### 4. Explorer Context Actions
 - Copy file size for selected file/folder.

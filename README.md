@@ -10,7 +10,10 @@ Display file sizes directly in the VS Code file explorer!
 ✅ Display folder sizes when expanded.
 ✅ Customizable thresholds for small, medium, and large files.
 ✅ Colored icons to indicate file sizes (🔴 Red for large, 🟡 Yellow for medium, 🟢 Green for small).
-✅ A **dashboard panel** to view the largest files in your project.
+✅ **Smart caching** for improved performance - cache is automatically invalidated on file changes.
+✅ **Exclusion patterns** to skip node_modules, .git, and other folders you don't want to scan.
+✅ **Configurable recursion depth** for deep directory structures.
+✅ Option to disable folder size calculation for very large repositories.
 
 ## 📥 Installation
 
@@ -45,6 +48,8 @@ Once installed, file sizes will appear next to files in the **Explorer**.
 
 Modify settings via VS Code settings:
 
+### Color Thresholds
+
 | Setting                     | Description                                 | Default Value |
 | --------------------------- | ------------------------------------------- | ------------- |
 | `fileSizeViewer.greenMaxBytes`  | Maximum bytes for green 🟢 band            | `1048576`     |
@@ -52,10 +57,23 @@ Modify settings via VS Code settings:
 | `fileSizeViewer.yellowMaxBytes` | Maximum bytes for yellow 🟡 band           | `104857600`   |
 | `fileSizeViewer.redMinBytes`    | Minimum bytes for red 🔴 band              | `104857601`   |
 
+### Performance and Exclusions
+
+| Setting                     | Description                                 | Default Value |
+| --------------------------- | ------------------------------------------- | ------------- |
+| `fileSizeViewer.excludePatterns` | Folders/files to exclude from size calculation | `["node_modules", ".git", "dist", "out", "build", ".vscode"]` |
+| `fileSizeViewer.maxRecursionDepth` | Maximum folder depth for size calculation | `10` |
+| `fileSizeViewer.enableFolderSizeCalculation` | Enable recursive folder size calculation | `true` |
+| `fileSizeViewer.enableCache` | Enable caching of computed sizes | `true` |
+
 Notes:
 - Values are in bytes.
 - Example conversions: `1024 = 1KB`, `1048576 = 1MB`, `104857600 = 100MB`.
 - Validation rules: `greenMaxBytes < yellowMinBytes <= yellowMaxBytes < redMinBytes`.
+- Exclude patterns support exact names (`node_modules`) and wildcards (`*.log`).
+- Cache is automatically invalidated when files change.
+- Lower `maxRecursionDepth` improves performance in deep directory structures.
+- Disable `enableFolderSizeCalculation` for very large repositories to improve performance.
 
 ## 🛠️ Development
 

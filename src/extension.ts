@@ -5,23 +5,20 @@ export function activate(context: vscode.ExtensionContext) {
   const decorationProvider = new FileSizeDecorationProvider();
   console.log("File size decoration provider is active");
 
-  // Register file decoration provider
+  // File system watchers for cache invalidation
+  const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*");
+
+  // Register all subscriptions
   context.subscriptions.push(
     vscode.window.registerFileDecorationProvider(decorationProvider),
     decorationProvider,
-  );
-
-  context.subscriptions.push(
     vscode.commands.registerCommand("fileSizeViewer.refresh", () => {
+      decorationProvider.clearCache();
       decorationProvider.reloadConfiguration();
       return vscode.commands.executeCommand(
         "workbench.files.action.refreshFilesExplorer",
       );
     }),
-  );
-
-  // Listen for configuration changes and refresh file explorer
-  context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration("fileSizeViewer")) {
         decorationProvider.reloadConfiguration();
@@ -33,7 +30,21 @@ export function activate(context: vscode.ExtensionContext) {
         );
       }
     }),
+    fileWatcher.onDidCreate((uri) => {
+      decorationProvider.invalidatePath(uri.fsPath);
+    }),
+    fileWatcher.onDidChange((uri) => {
+      decorationProvider.invalidatePath(uri.fsPath);
+    }),
+    fileWatcher.onDidDelete((uri) => {
+      decorationProvider.invalidatePath(uri.fsPath);
+    }),
+    fileWatcher,
   );
+
+  console.log("[INFO] Extension activated!");
 }
 
-export function deactivate() {}
+export function deactivate() {
+  // Cleanup is handled by dispose() methods in subscriptions
+}
