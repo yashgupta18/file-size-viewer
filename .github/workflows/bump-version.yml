@@ -81,3 +81,14 @@ jobs:
         run: |
           git add package.json package-lock.json CHANGELOG.md
           git commit -m "chore(release): v${{ steps.new_version.outputs.version }}"
+          git push origin main
+
+      - name: Summary
+        run: |
+          echo "### ✅ Version Bumped\!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Previous Version:** ${{ steps.current_version.outputs.current }}" >> $GITHUB_STEP_SUMMARY
+          echo "**New Version:** ${{ steps.new_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Bump Type:** ${{ github.event.inputs.bump_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The Release workflow will trigger automatically\!" >> $GITHUB_STEP_SUMMARY

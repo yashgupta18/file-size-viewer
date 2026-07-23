@@ -32,7 +32,7 @@ jobs:
 
       - name: Wait for push to propagate
         if: github.event_name == 'workflow_run'
-        run: sleep 10
+        run: sleep 30
 
       - name: Pull latest changes
         if: github.event_name == 'workflow_run'
