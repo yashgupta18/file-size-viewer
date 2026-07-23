@@ -1235,17 +1235,18 @@ export class DashboardPanel {
         const item = document.createElement('div');
         item.className = 'treemap-item';
         item.style.flex = \`\${percentage} 1 0%\`;
-        item.style.minWidth = \`\${Math.max(percentage, 10)}%\`;
+        item.style.minWidth = \`\${Math.max(percentage, 8)}%\`;
         item.style.backgroundColor = colors[index % colors.length];
         item.title = \`\${folder}: \${formatSize(data.size)} (\${data.files.length} files)\nClick to reveal in Explorer\`;
 
-        // Show text for folders with at least 2% of total size
-        const shouldShowText = percentage > 2;
+        // Adjust font size based on box size
+        const fontSize = percentage > 8 ? '11px' : percentage > 5 ? '9px' : '8px';
+        const sizeTextSize = percentage > 8 ? '9px' : '8px';
 
         item.innerHTML = \`
-          <div>
-            <div class="treemap-label">\${shouldShowText ? folder : ''}</div>
-            <div class="treemap-size">\${shouldShowText ? formatSize(data.size) : ''}</div>
+          <div style="font-size: \${fontSize};">
+            <div class="treemap-label">\${folder}</div>
+            <div class="treemap-size" style="font-size: \${sizeTextSize};">\${formatSize(data.size)}</div>
           </div>
         \`;
 
