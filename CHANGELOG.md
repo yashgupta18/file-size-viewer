@@ -4,6 +4,11 @@ All notable changes to the "file-size-viewer" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.4] - 2026-07-23
+
+### Changed
+- Added Graphs and Visual Analytics
+
 ## [0.1.3] - 2026-07-23
 
 ### Changed
